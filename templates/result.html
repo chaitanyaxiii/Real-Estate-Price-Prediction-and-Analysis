@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <style>
+        body {
+            background-image: url('../static/images/Real_Estate.jpg'); /* Add your background image here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        .btn-primary, .btn-secondary, .btn-danger {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        h1, h2 {
+            animation: slideIn 1s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        .form-group {
+            animation: zoomIn 0.8s ease-in-out;
+        }
+        @keyframes zoomIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+    </style>
+    <div class="container">
+        <h1 class="mt-5">Prediction Result</h1>
+        <p class="lead">The predicted price is: ₹{{ prediction }}</p>
+        <a href="/" class="btn btn-primary">Go Back</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3" style="margin-bottom: 13px;">Logout</a>
+        <!-- Add this button within your existing content -->
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Price Prediction</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <style>
+        body {
+            background-image: url('../static/images/Real_Estate.jpg'); /* Add your background image here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        .btn-primary, .btn-secondary, .btn-danger {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        h1, h2 {
+            animation: slideIn 1s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        .form-group {
+            animation: zoomIn 0.8s ease-in-out;
+        }
+        @keyframes zoomIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+    
+    </style>
+    <div class="container">
+        <h1 class="mt-5">Real Estate Price Prediction</h1>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h2>Flat Price Prediction</h2>
+                <form action="/predict_flat" method="post">
+                    <div class="form-group">
+                        <label for="area">Area (sq.ft)</label>
+                        <input type="number" class="form-control" id="area" name="area" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bedrooms">Bedrooms</label>
+                        <input type="number" class="form-control" id="bedrooms" name="bedrooms" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bathrooms">Bathrooms</label>
+                        <input type="number" class="form-control" id="bathrooms" name="bathrooms" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mainroad">Main Road</label>
+                        <select class="form-control" id="mainroad" name="mainroad" required>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="furnishingstatus">Furnishing Status</label>
+                        <select class="form-control" id="furnishingstatus" name="furnishingstatus" required>
+                            <option value="furnished">Furnished</option>
+                            <option value="unfurnished">Unfurnished</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Predict Price</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h2>Plot Price Prediction</h2>
+                <form action="/predict_plot" method="post">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <select class="form-control" id="city" name="city" required>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Kolkata">Kolkata</option>
+                            <option value="Ahmedabad">Ahmedabad</option>
+                            <option value="Pune">Pune</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <!-- Add more cities if needed -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="area">Area (sq.ft)</label>
+                        <input type="number" class="form-control" id="area" name="area" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Predict Price</button>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <button class="btn btn-secondary" onclick="showAccuracy()">Show Accuracy</button>
+                <button class="btn btn-secondary" onclick="showGraph()">Show Graph</button>
+                <button class="btn btn-secondary" onclick="showConfusionMatrix()">Show Confusion Matrix</button>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div id="result-container"><!-- Add this button within your existing content -->
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Logout</a>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAccuracy() {
+            fetch('/accuracy')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result-container').innerHTML = `<h3>Model Accuracy: ${data.accuracy}%</h3>`;
+                });
+        }
+
+        function showGraph() {
+            fetch('/graph')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.createElement('canvas');
+                    document.getElementById('result-container').innerHTML = '';
+                    document.getElementById('result-container').appendChild(ctx);
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Linear Regression',
+                                data: data.values,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+
+        function showConfusionMatrix() {
+            fetch('/confusion_matrix')
+                .then(response => response.json())
+                .then(data => {
+                    let table = '<table class="table table-bordered"><tr><th></th>';
+                    for (let i = 0; i < data.length; i++) {
+                        table += `<th>Predicted ${i}</th>`;
+                    }
+                    table += '</tr>';
+                    for (let i = 0; i < data.length; i++) {
+                        table += `<tr><th>Actual ${i}</th>`;
+                        for (let j = 0; j < data[i].length; j++) {
+                            table += `<td>${data[i][j]}</td>`;
+                        }
+                        table += '</tr>';
+                    }
+                    table += '</table>';
+                    document.getElementById('result-container').innerHTML = table;
+                });
+        }
+    </script>
+</body>
+</html>
